@@ -12,15 +12,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+/**
+ * Class to calculate the median degree from a graph of venmo transactions 
+ * within a 60 second sliding window.
+ * 
+ * @author Edwin Dedeaux
+ *
+ */
 public class MedianDegree{
 
 
 	public MedianDegree() {
-		// TODO Auto-generated constructor stub
+		//Currently un-modified auto-generated constructor stub
 	}
 
 	/**
-	 * @param args
+	 * Main method to parse the venmo transactions input file and write the results 
+	 * to the an output file.
+	 * 
+	 * @param args[0] contains the path for the output file
+	 *        args[1] contains the path to the input file
+	 * 		
 	 */
 	public static void main(String[] args) {
 
@@ -36,6 +48,9 @@ public class MedianDegree{
 			boolean firstTransaction = true; 
 			String str = new String();
 
+			//
+			// iterate over all the transactions in the input file.
+			//
 			while ((str = br.readLine()) != null) {
 				//
 				//populate the Edge object with the JSON entry.
@@ -72,21 +87,30 @@ public class MedianDegree{
 				}
 
 			}
+			//
+			// close the input/output files.
 			br.close();
 			pw.close();
 		}
 		catch (IOException e) {
-			System.out.println("Bad Transaction");
 			e.printStackTrace();
 		}
 	}//end of main()
 
-
+	/**
+	 * This method compares the existing transaction information for data integrity, if the transaction is clean
+	 * then its information is entered into the vertices map(Actor/Target relationship w/created-time).
+	 *
+	 * @param tr   object containing the transaction info.
+	 * @param vm   Map containing the individual members and their current edge relationships
+	 * @param maxTime   the upper time boundary for entries in the vertices map.
+	 * 
+	 */
 	public static boolean validateAndProcessTransaction(Transaction tr,Map<String,Edges> vm,Date maxTime){
 		//
-		// outside of the time window, discard.
+		// determine if the created-time is outside of the time 60 second time window, 
+		// if so skip this transaction.
 		Date cutoffTime = getCutoffTime(maxTime);
-
 		if (tr.getCreatedTime().before(cutoffTime))
 			return true; //still need to calculate the median degree.
 
@@ -138,7 +162,14 @@ public class MedianDegree{
 		return true;
 	}
 
-
+	/**
+	 * Method to determine if entries in the vertices map need to be removed based on 
+	 * the 60 second sliding window.
+	 * 
+	 * @param maxTime   the upper time boundary for entries in the vertices map.
+	 * @param vm   Map containing the individual members and their current edge relationships
+	 * 
+	 */
 	public static void evaluate60SecondSlidingWindow(Date maxTime,Map<String,Edges> vm){
 
 		class RemovalObject {
@@ -148,9 +179,12 @@ public class MedianDegree{
 
 		Date cutoffTime = getCutoffTime(maxTime);
 		ArrayList<RemovalObject> roArrayList = new ArrayList<RemovalObject>();
-
+		//
+		// iterate over each user in the vertices graph and review each of the 
+		// edge relationships checking the 60 second time window, if outside of
+		// the window, mark them for removal.
+		//
 		for (Map.Entry<String,Edges> mm : vm.entrySet()) {
-
 			for (Map.Entry<String, Date> tme : mm.getValue().targetsMap.entrySet()) {
 				if (tme.getValue().before(cutoffTime)){
 					//create a removal map of actors and targets.
@@ -161,9 +195,7 @@ public class MedianDegree{
 			}
 		}
 
-		//
-		// 
-		//
+		//  process the removal list created above.
 		for (int i=0; i<roArrayList.size(); i++){
 			vm.get(roArrayList.get(i).actor).removeEdge(roArrayList.get(i).target); 
 			if (vm.get(roArrayList.get(i).actor).edgeCount <= 0)
@@ -171,7 +203,12 @@ public class MedianDegree{
 		}
 	}
 
-
+	/**
+	 * Simple method to calculate the lower limit of the time window for entries
+	 * in the vertices map.
+	 * 
+	 *  @param maxTime   the upper time boundary for entries in the vertices map.
+	 */
 	private static Date getCutoffTime(Date maxTime){
 		final long ONE_MINUTE_IN_MILLIS = 60000;
 		long maxTimeInMs = maxTime.getTime();
@@ -179,6 +216,13 @@ public class MedianDegree{
 		return cutoffTime;
 	}
 
+	/**
+	 * Method to calculate the median for the current vertices map.
+	 * 
+	 * @param v  Vertices graph of relationships within the current 60 second window
+	 * @param pw  PrintWriter handle for the file containing the calculated medians.
+	 * 
+	 */
 	public static void calculateMedianDegree(Map<String,Edges> v,PrintWriter pw){
 		Set<Map.Entry<String,Edges>> set = v.entrySet();
 		int mdArray[] = new int[set.size()];

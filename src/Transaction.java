@@ -1,6 +1,10 @@
 import java.util.Date;
 
-
+/**
+ * Class used for deserializing a JSON object containing various
+ * pieces of information for a venmo transaction.
+ * 
+ */
 public class Transaction {
 
 	public Transaction() {
