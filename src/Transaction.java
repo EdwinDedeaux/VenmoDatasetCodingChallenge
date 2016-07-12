@@ -1,10 +1,6 @@
 import java.util.Date;
 
-/**
- * Class used for deserializing a JSON object containing various
- * pieces of information for a venmo transaction.
- * 
- */
+
 public class Transaction {
 
 	public Transaction() {
@@ -24,7 +20,7 @@ public class Transaction {
 		return created_time;
 	}
 	public boolean validateData(){
-		if ((actor.isEmpty()) || (target.isEmpty()) || (created_time == null))
+		if ((actor.isEmpty()) || (target.isEmpty()) || (created_time == null) || (actor.equals(target)))
 			return false;
 		return true;
 	}
