@@ -1,7 +1,7 @@
 import java.util.Date;
 import java.util.HashMap;
 /**
- * Class to  maintain create and maintain a list of relationships
+ * Class to create and maintain a list of relationships
  * between an actor and one or more targets.
  * 
  * @author Edwin Dedeaux

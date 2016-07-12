@@ -1,6 +1,8 @@
 import java.util.Date;
-
-
+/**
+ * Class utilized by Gson to de-serialize a JSON object
+ * 
+ */
 public class Transaction {
 
 	public Transaction() {

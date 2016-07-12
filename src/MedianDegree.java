@@ -21,7 +21,6 @@ import java.util.TreeMap;
  */
 public class MedianDegree{
 
-
 	public MedianDegree() {
 		//Currently un-modified auto-generated constructor stub
 	}
@@ -120,9 +119,7 @@ public class MedianDegree{
 		// map and initialize/update the target map for the actor/target.
 		//
 		if (vm.containsKey(tr.getActor())){ // actor node exits
-
 			if (vm.containsKey(tr.getTarget())){  // target node exists
-
 				if (vm.get(tr.getActor()).targetsMap.containsKey(tr.getTarget())){
 					//update created_time possibly, not sure.
 				}
